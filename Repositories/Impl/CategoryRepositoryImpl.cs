@@ -23,9 +23,12 @@ namespace Warehouse.Repositories.Impl
 
         public void DeleteById(int id)
         {
-            _context.Categories
-                .Where(a => a.ID == id)
-                .ExecuteDelete();
+            var entity = _context.Categories.FirstOrDefault(a => a.ID == id);
+
+            if (entity == null)
+                throw new ArgumentException("Category not found!");
+
+            _context.Categories.Remove(entity);
         }
 
         public IEnumerable<CategoryEntity> FindAll()
@@ -43,21 +46,18 @@ namespace Warehouse.Repositories.Impl
             return (_context.SaveChanges() >= 0);
         }
 
-        public void Update(CategoryEntity entity, CategoryEntity data)
+        public void Update(int id, CategoryEntity data)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
             if (data == null)
             {
                 throw new AbandonedMutexException(nameof(data));
             }
-            _context.Categories
-                .Where(e => e.ID == entity.ID)
-                .ExecuteUpdate(a => a
-                .SetProperty(x => x.Name, data.Name)
-                );
+            var entity = _context.Categories.FirstOrDefault(a => a.ID == id);
+            if (entity == null)
+            {
+                throw new AbandonedMutexException(nameof(entity));
+            }
+            entity.Name = data.Name;
         }
     }
 }

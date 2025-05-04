@@ -23,9 +23,12 @@ namespace Warehouse.Repositories.Impl
 
         public void DeleteById(int id)
         {
-            _context.Addresses
-                .Where(a => a.ID == id)
-                .ExecuteDelete();
+             var entity = _context.Addresses.FirstOrDefault(a => a.ID == id);
+
+            if (entity == null)
+                throw new ArgumentException("Address not found!");
+
+            _context.Addresses.Remove(entity);
         }
 
         public IEnumerable<AddressEntity> FindAll()
@@ -43,23 +46,20 @@ namespace Warehouse.Repositories.Impl
             return (_context.SaveChanges() >= 0);
         }
 
-        public void Update(AddressEntity entity, AddressEntity data)
+        public void Update(int id, AddressEntity data)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
             if (data == null)
             {
                 throw new AbandonedMutexException(nameof(data));
             }
-            _context.Addresses
-                .Where(e => e.ID == entity.ID)
-                .ExecuteUpdate(a => a
-                .SetProperty(x => x.Country, data.Country)
-                .SetProperty(x => x.City, data.City)
-                .SetProperty(x => x.Street, data.Street)
-                );
+            var entity = _context.Addresses.FirstOrDefault(a => a.ID == id);
+            if (entity == null)
+            {
+                throw new AbandonedMutexException(nameof(entity));
+            }
+            entity.Country = data.Country;
+            entity.City = data.City;
+            entity.Street = data.Street;
         }
     }
 }

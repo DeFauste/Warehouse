@@ -9,7 +9,7 @@ namespace Warehouse.Data.Entity
         public CategoryEntity? Category { get; set; }
         public double Price { get; set; } = 0;
         public long AvailableStock { get; set; } = 0; // число закупленных экземпляров товара
-        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow; // число последней закупки
+        public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow; // дата последней закупки
         public DateTime ValidUntile { get; set; } = DateTime.UtcNow; // Годен до ..
         public Guid SupplierId { get; set; }
         public SupplierEntity? Supplier { get; set; }

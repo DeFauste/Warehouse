@@ -22,9 +22,12 @@ namespace Warehouse.Repositories.Impl
 
         public void DeleteById(int id)
         {
-            _context.Products
-                .Where(a => a.ID == id)
-                .ExecuteDelete();
+            var entity = _context.Products.FirstOrDefault(a => a.ID == id);
+
+            if (entity == null)
+                throw new ArgumentException("Product not found!");
+
+            _context.Products.Remove(entity);
         }
 
         public IEnumerable<ProductEntity> FindAll()
@@ -43,26 +46,23 @@ namespace Warehouse.Repositories.Impl
             return (_context.SaveChanges() >= 0);
         }
 
-        public void Update(ProductEntity entity, ProductEntity data)
+        public void Update(int id, ProductEntity data)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
             if (data == null)
             {
                 throw new AbandonedMutexException(nameof(data));
             }
-            _context.Products
-                 .Where(e => e.ID == entity.ID)
-                 .ExecuteUpdate(a => a
-                 .SetProperty(x => x.Name, data.Name)
-                 .SetProperty(x => x.CategoryId, data.CategoryId)
-                 .SetProperty(x => x.Price, data.Price)
-                 .SetProperty(x => x.AvailableStock, data.AvailableStock)
-                 .SetProperty(x => x.SupplierId, data.SupplierId)
-                 .SetProperty(x => x.Price, data.Price)
-                 );
+            var entity = _context.Products.FirstOrDefault(a => a.ID == id);
+            if (entity == null)
+            {
+                throw new AbandonedMutexException(nameof(entity));
+            }
+            entity.Name = data.Name;
+            entity.CategoryId = data.CategoryId;
+            entity.Price = data.Price;
+            entity.AvailableStock = data.AvailableStock;
+            entity.SupplierId = data.SupplierId;
+            entity.Price = data.Price;
         }
     }
 }

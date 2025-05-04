@@ -6,7 +6,7 @@
         void DeleteById(ID id);
         T FindById(ID id);
         IEnumerable<T> FindAll();
-        void Update(T entity, T data);
+        void Update(ID Id, T data);
         bool SaveChange();
     }
 }

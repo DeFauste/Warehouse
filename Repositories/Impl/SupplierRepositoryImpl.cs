@@ -22,9 +22,12 @@ namespace Warehouse.Repositories.Impl
 
         public void DeleteById(int id)
         {
-            _context.Suppliers
-                .Where(a => a.ID == id)
-                .ExecuteDelete();
+            var entity = _context.Suppliers.FirstOrDefault(a => a.ID == id);
+
+            if (entity == null)
+                throw new ArgumentException("Supplier not found!");
+
+            _context.Suppliers.Remove(entity);
         }
 
         public IEnumerable<SupplierEntity> FindAll()
@@ -42,23 +45,20 @@ namespace Warehouse.Repositories.Impl
             return (_context.SaveChanges() >= 0);
         }
 
-        public void Update(SupplierEntity entity, SupplierEntity data)
+        public void Update(int id, SupplierEntity data)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
             if (data == null)
             {
                 throw new AbandonedMutexException(nameof(data));
             }
-            _context.Suppliers
-                .Where(e => e.ID == entity.ID)
-                .ExecuteUpdate(a => a
-                .SetProperty(x => x.Name, data.Name)
-                .SetProperty(x => x.AddressId, data.AddressId)
-                .SetProperty(x => x.PhoneNumber, data.PhoneNumber)
-                );
+            var entity = _context.Suppliers.FirstOrDefault(a => a.ID == id);
+            if (entity == null)
+            {
+                throw new AbandonedMutexException(nameof(entity));
+            }
+            entity.Name = data.Name;
+            entity.AddressId = data.AddressId;
+            entity.PhoneNumber = data.PhoneNumber;
         }
     }
 }
