@@ -34,6 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+PrepDb.PrepPopular(app);
 
 app.UseHttpsRedirection();
 
